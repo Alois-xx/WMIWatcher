@@ -62,4 +62,26 @@ WMIWatcher is a .NET Core 3 self contained application. Unzip it to a folder, ru
 ```
 to install WMIWatcher as Windows system service which is automatically started. 
 Besides the exe the WmiWatcher.csv file will be created
-Alternatively you can run it also directly 
+Alternatively you can run it also directly as console application. Simply start
+```
+C:>WMIWatcher.exe
+WMIWatcher [install] [uninstall]
+by Alois Kraus 2019 v1.1.0.0
+        install       Install WMIWatcher as system service which is started at boot to capture all WMI queries which are written to WMIWatcher.csv
+        uninstall     Uninstall system service
+        ==============================================================
+        When started with no arguments it will start watching for WMI queries and print the output to console and write data to WMIWatcher.csv
+        The file WmiWatcher.csv is rolled over at 30 MB and will be kept for the last 4 generations. Older files will be deleted
+
+Configuration Result:
+[Success] Name WMIWatcher
+[Success] ServiceName WMIWatcher
+Topshelf v4.2.1.215, .NET Framework v3.0.0
+The WMIWatcher service is now running, press Control+C to exit.
+2019.11.09|21:45:52.703|ExecQuery|"C:\ProgramData\Battle.net\Agent\Agent.6847\Agent.exe" --session=1976944718251490175|24856|False|SELECT ProcessId, ParentProcessId, ExecutablePath, Name FROM Win32_Process|root\cimv2|124462|48801|
+Date|Time|Operation|ClientProcess|ClientProcessId|IsRemote|Query|NameSpace|OperationId|GroupOperationId|Duration s
+2019.11.09|21:45:52.707|ExecAsync||||Provider::ExecQuery - CIMWin32 : select __RELPATH, ProcessId, ParentProcessId, ExecutablePath, Name from Win32_Process||0|48801|
+....
+```
+
+That gives you a live view of all running WMI Queries. 
