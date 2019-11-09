@@ -59,6 +59,7 @@ as ExecAsync. Missing Exec calls for a query is also an indication of a polling 
 WMIWatcher is a .NET Core 3 self contained application. Unzip it to a folder, run 
 ```
     C:>WMIWatcher.exe install
+    C:>sc start wmiwatcher
 ```
 to install WMIWatcher as Windows system service which is automatically started. 
 Besides the exe the WmiWatcher.csv file will be created
