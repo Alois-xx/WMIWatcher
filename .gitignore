@@ -8,3 +8,4 @@
 /WMIWatcher_uTest/obj
 /.vs/WMIWatcher
 /bin/Debug/netcoreapp3.0/win7-x64
+/bin/Release/netcoreapp3.0/win-x64
