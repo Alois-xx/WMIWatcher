@@ -12,8 +12,8 @@ using System.Threading;
 using Topshelf;
 using WMIWatcher.ETW;
 
-[assembly:AssemblyFileVersion("1.0.1.0")]
-[assembly: AssemblyVersion("1.0.1.0")]
+[assembly:AssemblyFileVersion("1.0.2.0")]
+[assembly: AssemblyVersion("1.0.2.0")]
 [assembly: InternalsVisibleTo("WMIWatcher_uTest")]
 
 namespace WMIWatcher
@@ -46,7 +46,6 @@ namespace WMIWatcher
                     x.Service<Service>();
                     x.EnableServiceRecovery(r => r.RestartService(TimeSpan.FromSeconds(10)));
                     x.SetServiceName(ServiceName);
-                    // Task Scheduler service is one of the first started services lets hope we are started next 
                     x.AfterInstall(ImportAutoLoggerFile);
                     x.AfterUninstall(CleanRegistryFromAutoLogger);
                     x.StartAutomatically();

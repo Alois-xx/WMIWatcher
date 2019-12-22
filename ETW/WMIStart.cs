@@ -56,7 +56,7 @@ namespace WMIWatcher.ETW
 
             ClientProcessId = (int)@event.PayloadByName("ClientProcessId");
 
-            TraceProcess process = realtimeSource?.TraceLog.Processes.Where(p => p.ProcessID == ClientProcessId).FirstOrDefault();
+            TraceProcess process = realtimeSource?.TraceLog.Processes.Where(p => p.ProcessID == ClientProcessId && p.ExitStatus == null).FirstOrDefault();
 
             // The process start time by Realtime ETW tracing is only correct when the process was started during that time. Otherwise it gets only the current day as start date
             if (process != null)
