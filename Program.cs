@@ -12,8 +12,8 @@ using System.Threading;
 using Topshelf;
 using WMIWatcher.ETW;
 
-[assembly:AssemblyFileVersion("1.0.2.0")]
-[assembly: AssemblyVersion("1.0.2.0")]
+[assembly:AssemblyFileVersion("1.0.3.0")]
+[assembly: AssemblyVersion("1.0.3.0")]
 [assembly: InternalsVisibleTo("WMIWatcher_uTest")]
 
 namespace WMIWatcher
@@ -26,7 +26,7 @@ namespace WMIWatcher
 
         static readonly string HelpStr =
             "WMIWatcher [install] [uninstall]" + Environment.NewLine +
-            $"by Alois Kraus 2019 v{Assembly.GetExecutingAssembly().GetName().Version}" + Environment.NewLine +
+            $"by Alois Kraus 2019-2020 v{Assembly.GetExecutingAssembly().GetName().Version}" + Environment.NewLine +
             "\tinstall       Install WMIWatcher as system service which is started at boot to capture all WMI queries which are written to WMIWatcher.csv" + Environment.NewLine +
             "\tuninstall     Uninstall system service" + Environment.NewLine +
             "\t==============================================================" + Environment.NewLine + 

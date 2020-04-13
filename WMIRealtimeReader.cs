@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
+using System.Threading.Tasks;
 using WMIWatcher.ETW;
 
 namespace WMIWatcher
@@ -13,21 +14,32 @@ namespace WMIWatcher
     public class WMIRealtimeReader : IDisposable
     {
         /// <summary>
-        /// Realtime ETW session
+        /// Realtime session
+        /// </summary>
+        TraceEventSession myRealtimeSession;
+
+        /// <summary>
+        /// Realtime ETW event stream processor
         /// </summary>
         TraceLogEventSource myTraceLogSource;
+
 
         readonly int myPid = System.Diagnostics.Process.GetCurrentProcess().Id;
 
         /// <summary>
-        /// At boot time our service does not yet run. To get all events we start a WMI Autologger user mode session wich no kernel (process start) events
+        /// At boot time our service does not yet run. To get all events we start a WMI Autologger user mode session which no kernel (process start) events
         /// When our service starts we parse these events and put them into the myEvents collection which is processed when our Realtime ETW session with full
         /// process names arrives. That way we can later for most processes assign full process names and not only pids from the early AutoLogger session
         /// </summary>
         const string AutoLoggerFileName = "%SystemRoot%\\System32\\LogFiles\\WMI\\WmiWatcher.etl";
 
         /// <summary>
-        /// Parsed events from Autlogger session which starts at boot until our service starts which stops the session and starts a new Realtime session
+        /// Restart ETW Realtime watcher to prevent consuming too much memory over time by previously started but now stopped processes.
+        /// </summary>
+        readonly TimeSpan RestartTime = TimeSpan.FromHours(20);
+
+        /// <summary>
+        /// Parsed events from Autologger session which starts at boot until our service starts which stops the session and starts a new Realtime session
         /// </summary>
         readonly List<WMIStart> myEvents = new List<WMIStart>();
         
@@ -44,20 +56,46 @@ namespace WMIWatcher
 
         public void Process()
         {
-            using var session = new TraceEventSession("WMIWatcher_Realtime");
-            session.EnableKernelProvider(KernelTraceEventParser.Keywords.ImageLoad | KernelTraceEventParser.Keywords.Process, KernelTraceEventParser.Keywords.None);
-            session.EnableProvider(WMIProviderDefinitions.WMI_Activity_Provider_Name, TraceEventLevel.Verbose, WMIProviderDefinitions.Keyword_WMI_Activity_Trace);
-
-            using (myTraceLogSource = TraceLog.CreateFromTraceEventSession(session))
+            while (true)
             {
-                WMIEventParser parser = new WMIEventParser(myTraceLogSource, "WmiWatcher", AutoLoggerFileName);
-                myTraceLogSource.Dynamic.All += parser.Parse;
-                parser.OnWMIOperationStart += Parser_OnWMIOperationStart;
-                //parser.OnWMIOperationStop += Parser_OnWMIOperationStop;
-                parser.OnWMIExecAsync += Parser_OnWMIExecAsync;
-                parser.OnProcessEndedWithDuration += Parser_OnProcessEndedWithDuration;
+                var processing = Task.Run(ProcessData);
+                if (processing.Wait(RestartTime) == false)
+                {
+                    FileLogger.Logger.Log("Restarting ETW Monitoring to prevent memory leaks");
+                    myRealtimeSession?.Stop();
+                    myTraceLogSource.Dispose();
+                    processing.Wait();
+                    FileLogger.Logger.Log("Current ETW Monitoring was successfully stopped.");
+                }
+            }
+        }
 
-                myTraceLogSource.Process();
+        void ProcessData()
+        {
+            try
+            {
+                using (myRealtimeSession = new TraceEventSession("WMIWatcher_Realtime"))
+                {
+                    myRealtimeSession.EnableKernelProvider(KernelTraceEventParser.Keywords.ImageLoad | KernelTraceEventParser.Keywords.Process, KernelTraceEventParser.Keywords.None);
+                    myRealtimeSession.EnableProvider(WMIProviderDefinitions.WMI_Activity_Provider_Name, TraceEventLevel.Verbose, WMIProviderDefinitions.Keyword_WMI_Activity_Trace);
+
+                    using (myTraceLogSource = TraceLog.CreateFromTraceEventSession(myRealtimeSession))
+                    {
+                        WMIEventParser parser = new WMIEventParser(myTraceLogSource, "WmiWatcher", AutoLoggerFileName);
+                        myTraceLogSource.Dynamic.All += parser.Parse;
+                        parser.OnWMIOperationStart += Parser_OnWMIOperationStart;
+                        //parser.OnWMIOperationStop += Parser_OnWMIOperationStop;
+                        parser.OnWMIExecAsync += Parser_OnWMIExecAsync;
+                        parser.OnProcessEndedWithDuration += Parser_OnProcessEndedWithDuration;
+
+                        myTraceLogSource.Process();
+                    }
+                }
+            }
+            catch(Exception ex)
+            {
+                FileLogger.Logger.Log($"Error: Got Exception while leaving ProcessData: {ex}");
+                throw;
             }
         }
 
@@ -119,7 +157,7 @@ namespace WMIWatcher
         /// <summary>
         /// Every sync execution is followed by and async execution of the query.
         /// The only exception are polling WMI queries (WITHIN xxx) which are executed always as async events
-        /// you can recognize therefore WMI polling queries as async events which no preceeding syng execution
+        /// you can recognize therefore WMI polling queries as async events which no preceding sync execution
         /// </summary>
         /// <param name="obj"></param>
         private void Parser_OnWMIExecAsync(WmiExecAsync obj)

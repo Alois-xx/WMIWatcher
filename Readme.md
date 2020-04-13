@@ -56,7 +56,7 @@ as ExecAsync. Missing Exec calls for a query is also an indication of a polling 
 
 ## Running Time
 
-WMIWatcher is a .NET Core 3 self contained application. Unzip it to a folder, run 
+WMIWatcher is a .NET Core 3.1 self contained application. Unzip it to a folder, run 
 ```
     C:>WMIWatcher.exe install
     C:>sc start wmiwatcher
@@ -86,3 +86,17 @@ Date|Time|Operation|ClientProcess|ClientProcessId|IsRemote|Query|NameSpace|Opera
 ```
 
 That gives you a live view of all running WMI Queries. 
+
+## Going Deeper
+If you see many different queries but you are unsure which ones are CPU hogs you need to capture also some ETW profiling data.
+To do that execute on your command line (wpr is part of Windows 10 no need to install extra tools if you just want to record)
+```
+C>wpr -start CPU
+```
+let it run for 30-60s and then execute
+```
+C>wpr -stop c:\temp\HighCPUWMIIssue.etl
+```
+and analyze with the Windows Performance Toolkit which is part of the Windows 10 SDK (https://developer.microsoft.com/en-US/windows/downloads/windows-10-sdk/). 
+You do not need to download the full Windows 10 SDK. It is sufficient to uncheck all check boxes except for WPT.
+
