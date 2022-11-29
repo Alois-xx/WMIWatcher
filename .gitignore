@@ -7,3 +7,5 @@
 /WMIWatcher_uTest/obj
 /.vs/
 /bin/
+/Properties/PublishProfiles/FolderProfile.pubxml.user
+/WMIWatcher.csproj.user
