@@ -42,7 +42,7 @@ namespace WMIWatcher
             {
                 if (myReader != null)
                 {
-                    myReader.Dispose();
+                    myReader?.Dispose();
                     myReader = null;
                 }
             }
