@@ -12,8 +12,8 @@ using System.Threading;
 using Topshelf;
 using WMIWatcher.ETW;
 
-[assembly:AssemblyFileVersion("1.0.4.0")]
-[assembly: AssemblyVersion("1.0.4.0")]
+[assembly:AssemblyFileVersion("1.0.5.0")]
+[assembly: AssemblyVersion("1.0.5.0")]
 [assembly: InternalsVisibleTo("WMIWatcher_uTest")]
 
 namespace WMIWatcher
@@ -49,6 +49,7 @@ namespace WMIWatcher
 
             HostFactory.Run(x =>
                 {
+                    x.UnhandledExceptionPolicy = Topshelf.Runtime.UnhandledExceptionPolicyCode.TakeNoAction;
                     x.Service<Service>();
                     x.EnableServiceRecovery(r => r.RestartService(TimeSpan.FromSeconds(10)));
                     x.SetServiceName(ServiceName);

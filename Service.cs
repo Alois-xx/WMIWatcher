@@ -42,7 +42,12 @@ namespace WMIWatcher
             {
                 if (myReader != null)
                 {
-                    myReader?.Dispose();
+                    try
+                    {
+                        myReader?.Dispose();
+                    }
+                    catch (NullReferenceException) // pressing ctrl-C will cause some NullRef inside TopShelf. 
+                    { }
                     myReader = null;
                 }
             }
