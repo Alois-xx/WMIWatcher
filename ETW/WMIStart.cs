@@ -52,62 +52,65 @@ namespace WMIWatcher.ETW
                 _ => throw new InvalidOperationException($"Event with ID {WMIProviderDefinitions.WMI_Activity_Start} expected. But got: {@event.ID}")
             };
 
-            ClientProcessCreationTime = DateTime.FromFileTime((Int64)@event.PayloadByName("ClientProcessCreationTime"));
+            object clientProcessCreationTime = @event.PayloadByName("ClientProcessCreationTime");
+            object clientProcessId = @event.PayloadByName("ClientProcessId");
+            ClientProcess = "Unknown Process - Use ClientProcessId";
 
-            ClientProcessId = (int)@event.PayloadByName("ClientProcessId");
+            if (clientProcessCreationTime != null && clientProcessId != null)
+            { 
+                ClientProcessCreationTime = DateTime.FromFileTime((Int64)clientProcessCreationTime);
 
-            TraceProcess process = realtimeSource?.TraceLog.Processes.Where(p => p.ProcessID == ClientProcessId && p.ExitStatus == null).FirstOrDefault();
+                ClientProcessId = (int)clientProcessId;
 
-            // The process start time by Realtime ETW tracing is only correct when the process was started during that time. Otherwise it gets only the current day as start date
-            if (process != null)
-            {
-                ClientProcess = $"{process.CommandLine}";
-            }
-            else
-            {
-                ClientProcess = "Unknown Process - Use ClientProcessId";
-            }
+                TraceProcess process = realtimeSource?.TraceLog.Processes.Where(p => p.ProcessID == ClientProcessId && p.ExitStatus == null).FirstOrDefault();
 
-            GroupOperationid = (int)@event.PayloadByName("GroupOperationId");
-            IsRemoteQuery = !(bool)@event.PayloadByName("IsLocal");
+                // The process start time by Realtime ETW tracing is only correct when the process was started during that time. Otherwise it gets only the current day as start date
+                if (process != null)
+                {
+                    ClientProcess = $"{process.CommandLine}";
+                }
 
-            // operation is a string which can have several values
-            string operation = @event.PayloadByName("Operation").ToString();
+                GroupOperationid = (int)@event.PayloadByName("GroupOperationId");
+                IsRemoteQuery = !(bool)@event.PayloadByName("IsLocal");
 
-            if (operation.IndexOf(Operation_ExecQuery) != -1)
-            {
-                Operation = WMIOperation.ExecQuery;
-                ExtractNameSpaceAndQuery(Operation_ExecQuery, operation);
-            }
-            else if (operation.IndexOf(Operation_EnumerateClass) != -1)
-            {
-                Operation = WMIOperation.CreateEnumerator;
-                ExtractNameSpaceAndQuery(Operation_EnumerateClass, operation);
-            }
-            else if (operation.IndexOf(Operation_EnumerateInstance) != -1)
-            {
-                Operation = WMIOperation.CreateEnumerator;
-                ExtractNameSpaceAndQuery(Operation_EnumerateInstance, operation);
-            }
-            else if (operation.IndexOf(Operation_ExecMethod) != -1)
-            {
-                Operation = WMIOperation.ExecMethod;
-                ExtractNameSpaceAndQuery(Operation_ExecMethod, operation);
-            }
-            else if( operation.IndexOf(Operation_ExecNotificatonQuery) != -1)
-            {
-                Operation = WMIOperation.NotificationQuery;
-                ExtractNameSpaceAndQuery(Operation_ExecNotificatonQuery, operation);
-            }
-            else if (operation.IndexOf(Operation_Connect) != -1)
-            {
-                Operation = WMIOperation.Connect;
-                Query = "";
-            }
-            else
-            {
-                Operation = WMIOperation.Other;
-                Query = operation;
+                // operation is a string which can have several values
+                string operation = @event.PayloadByName("Operation")?.ToString() ?? "";
+
+                if (operation.IndexOf(Operation_ExecQuery) != -1)
+                {
+                    Operation = WMIOperation.ExecQuery;
+                    ExtractNameSpaceAndQuery(Operation_ExecQuery, operation);
+                }
+                else if (operation.IndexOf(Operation_EnumerateClass) != -1)
+                {
+                    Operation = WMIOperation.CreateEnumerator;
+                    ExtractNameSpaceAndQuery(Operation_EnumerateClass, operation);
+                }
+                else if (operation.IndexOf(Operation_EnumerateInstance) != -1)
+                {
+                    Operation = WMIOperation.CreateEnumerator;
+                    ExtractNameSpaceAndQuery(Operation_EnumerateInstance, operation);
+                }
+                else if (operation.IndexOf(Operation_ExecMethod) != -1)
+                {
+                    Operation = WMIOperation.ExecMethod;
+                    ExtractNameSpaceAndQuery(Operation_ExecMethod, operation);
+                }
+                else if (operation.IndexOf(Operation_ExecNotificatonQuery) != -1)
+                {
+                    Operation = WMIOperation.NotificationQuery;
+                    ExtractNameSpaceAndQuery(Operation_ExecNotificatonQuery, operation);
+                }
+                else if (operation.IndexOf(Operation_Connect) != -1)
+                {
+                    Operation = WMIOperation.Connect;
+                    Query = "";
+                }
+                else
+                {
+                    Operation = WMIOperation.Other;
+                    Query = operation;
+                }
             }
         }
 
