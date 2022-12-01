@@ -12,8 +12,8 @@ using System.Threading;
 using Topshelf;
 using WMIWatcher.ETW;
 
-[assembly:AssemblyFileVersion("1.0.5.0")]
-[assembly: AssemblyVersion("1.0.5.0")]
+[assembly:AssemblyFileVersion("1.0.6.0")]
+[assembly: AssemblyVersion("1.0.6.0")]
 [assembly: InternalsVisibleTo("WMIWatcher_uTest")]
 
 namespace WMIWatcher
