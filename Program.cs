@@ -41,7 +41,7 @@ namespace WMIWatcher
                 Help();
             }
 
-            if( !UACHelper.UACHelper.IsElevated || !UACHelper.UACHelper.IsAdministrator)
+            if ( !UACHelper.UACHelper.IsElevated || !UACHelper.UACHelper.IsAdministrator)
             {
                 Console.WriteLine("Error: You must be administrator and run with elevated privileges.");
                 return;
@@ -106,8 +106,7 @@ namespace WMIWatcher
 
         private static void ImportAutoLoggerFile()
         {
-            string dir = Path.GetDirectoryName(typeof(Program).Assembly.Location);
-            string fullPathRegFile = Path.Combine(dir, AutoLoggerRegFileName);
+            string fullPathRegFile = Path.Combine(AppContext.BaseDirectory, AutoLoggerRegFileName);
             string cmdLine = $"IMPORT \"{fullPathRegFile}\"";
             StartReg(cmdLine);
         }
