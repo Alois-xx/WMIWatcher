@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Management;
 using System.Text;
 
@@ -7,8 +8,8 @@ namespace WMIWatcher.WMI
 {
     class WmiQuery
     {
-        string myQuery;
-        string myWmiNamespace;
+        readonly string myQuery;
+        readonly string myWmiNamespace;
 
         public WmiQuery(string query, string wmiNameSpace)
         {
@@ -21,12 +22,12 @@ namespace WMIWatcher.WMI
         }
 
         public void Execute()
-        { 
+        {
             try
             {
-                ManagementObjectSearcher searcher = new ManagementObjectSearcher(myWmiNamespace, myQuery);
+                ManagementObjectSearcher searcher = new(myWmiNamespace, myQuery);
 
-                foreach (ManagementObject queryObj in searcher.Get())
+                foreach (ManagementObject queryObj in searcher.Get().Cast<ManagementObject>())
                 {
                     foreach(var prop in queryObj.Properties)
                     {
@@ -34,7 +35,7 @@ namespace WMIWatcher.WMI
                     }
                 }
             }
-            catch (ManagementException e)
+            catch (ManagementException)
             {
 
             }

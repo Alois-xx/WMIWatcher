@@ -71,39 +71,6 @@ namespace WMIWatcher
             Service.RunningService.Dispose();
         }
 
-        private static void Dynamic_All(TraceEvent obj)
-        {
-            Console.WriteLine(obj);
-        }
-
-        private static void Parser_OnWMIOperationStart(WMIStart obj)
-        {
-            Console.WriteLine("{obj}");
-        }
-
-        // According to https://social.technet.microsoft.com/Forums/windowsserver/en-US/445ddb5e-16b4-4dca-ab89-c0d0ec728af5/boot-order-of-windows-services
-        // we can influence the service startup order by specifying a service group. Scheduler is started as one of the first services
-        // so we can be pretty sure to get everything in place before anything interesting happens
-        // We just need to start early enough before WMI Service is up and it can be used. 
-        // Service Group Start Order is defined in Computer\HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\ServiceGroupOrder
-        private static void RegisterAsEarlyStartedServiceAndAutoLogger()
-        {
-            ImportAutoLoggerFile();
-
-            string serviceKeyBase = @"SYSTEM\CurrentControlSet\Services";
-            string serviceKeyName =  serviceKeyBase + "\\" + ServiceName;
-            var key = Registry.LocalMachine.OpenSubKey(serviceKeyName, true);
-            if( key == null )
-            {
-                key = Registry.LocalMachine.OpenSubKey(serviceKeyBase, true);
-                key = key.CreateSubKey(ServiceName);
-            }
-
-            // start service as early as possible 
-            // but we still loose some events since all services are started concurrently after the servicemain was entered
-            key.SetValue("Group", "Video", RegistryValueKind.String);
-        }
-
         private static void ImportAutoLoggerFile()
         {
             string fullPathRegFile = Path.Combine(AppContext.BaseDirectory, AutoLoggerRegFileName);
