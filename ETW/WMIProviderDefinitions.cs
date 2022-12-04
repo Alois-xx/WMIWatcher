@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace WMIWatcher.ETW
+﻿namespace WMIWatcher.ETW
 {
     //C> logman query providers Microsoft-Windows-WMI-Activity
     //

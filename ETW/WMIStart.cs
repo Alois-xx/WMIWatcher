@@ -1,9 +1,7 @@
 ﻿using Microsoft.Diagnostics.Tracing;
 using Microsoft.Diagnostics.Tracing.Etlx;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace WMIWatcher.ETW
 {
@@ -28,6 +26,7 @@ namespace WMIWatcher.ETW
         public string ClientProcess { get; set; }
         public bool IsRemoteQuery { get; }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Maintainability", "CA1507:Use nameof to express symbol names", Justification = "<Pending>")]
         public WMIStart(TraceEvent @event, TraceLogEventSource realtimeSource, TraceLog log) : base(@event)
         {
             // Parts of the event are

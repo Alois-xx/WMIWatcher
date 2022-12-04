@@ -1,19 +1,16 @@
 ﻿using Microsoft.Diagnostics.Tracing;
-using Microsoft.Diagnostics.Tracing.Etlx;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace WMIWatcher.ETW
 {
-     // <template tid = "task_012Args" >
-     // < data name="GroupOperationId" inType="win:UInt32"/>
-     // <data name = "Operation" inType="win:UnicodeString"/>
-     // <data name = "HostId" inType="win:UInt32"/>
-     // <data name = "ProviderName" inType="win:UnicodeString"/>
-     // <data name = "ProviderGuid" inType="win:UnicodeString"/>
-     // <data name = "Path" inType="win:UnicodeString"/>
-     //</template>
+    // <template tid = "task_012Args" >
+    // < data name="GroupOperationId" inType="win:UInt32"/>
+    // <data name = "Operation" inType="win:UnicodeString"/>
+    // <data name = "HostId" inType="win:UInt32"/>
+    // <data name = "ProviderName" inType="win:UnicodeString"/>
+    // <data name = "ProviderGuid" inType="win:UnicodeString"/>
+    // <data name = "Path" inType="win:UnicodeString"/>
+    //</template>
 
     class WmiExecAsync : EventBase
     {

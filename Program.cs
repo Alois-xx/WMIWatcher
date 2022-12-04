@@ -1,18 +1,11 @@
-﻿using Microsoft.Diagnostics.Tracing;
-using Microsoft.Diagnostics.Tracing.Etlx;
-using Microsoft.Diagnostics.Tracing.Parsers;
-using Microsoft.Diagnostics.Tracing.Session;
-using Microsoft.Win32;
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Threading;
 using Topshelf;
-using WMIWatcher.ETW;
 
-[assembly:AssemblyFileVersion("1.0.6.0")]
+[assembly: AssemblyFileVersion("1.0.6.0")]
 [assembly: AssemblyVersion("1.0.6.0")]
 [assembly: InternalsVisibleTo("WMIWatcher_uTest")]
 
