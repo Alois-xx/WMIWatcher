@@ -56,7 +56,7 @@ as ExecAsync. Missing Exec calls for a query is also an indication of a polling 
 
 ## Running Time
 
-WMIWatcher is a .NET Core 7.0 self contained application. Unzip it to a folder, run 
+WMIWatcher is a .NET 7.0 self contained application. Unzip it to a folder, run 
 ```
     C:>WMIWatcher.exe install
     C:>sc start wmiwatcher
@@ -77,7 +77,7 @@ by Alois Kraus 2019 v1.1.0.0
 Configuration Result:
 [Success] Name WMIWatcher
 [Success] ServiceName WMIWatcher
-Topshelf v4.2.1.215, .NET Framework v3.0.0
+Topshelf v4.2.1.215, .NET Framework v7.0
 The WMIWatcher service is now running, press Control+C to exit.
 2019.11.09|21:45:52.703|ExecQuery|"C:\ProgramData\Battle.net\Agent\Agent.6847\Agent.exe" --session=1976944718251490175|24856|False|SELECT ProcessId, ParentProcessId, ExecutablePath, Name FROM Win32_Process|root\cimv2|124462|48801|
 Date|Time|Operation|ClientProcess|ClientProcessId|IsRemote|Query|NameSpace|OperationId|GroupOperationId|Duration s
