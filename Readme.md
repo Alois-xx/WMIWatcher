@@ -56,7 +56,7 @@ as ExecAsync. Missing Exec calls for a query is also an indication of a polling 
 
 ## Running Time
 
-WMIWatcher is a .NET Core 3.1 self contained application. Unzip it to a folder, run 
+WMIWatcher is a .NET Core 7.0 self contained application. Unzip it to a folder, run 
 ```
     C:>WMIWatcher.exe install
     C:>sc start wmiwatcher
